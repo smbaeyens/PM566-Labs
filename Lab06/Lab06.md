@@ -65,3 +65,46 @@ There is no even distribution among the 40 specialties. Surgery has the
 highest count, while hospice-pallative care has the lowest count.
 
 ## 2. Tokenizing the words in the transcription column
+
+Tokenizing words & visualizing top 20:
+
+``` r
+mtsamples %>%
+  unnest_tokens(output= word, input= transcription) %>%
+  count(word, sort= TRUE) %>%
+  top_n(20) %>%
+  ggplot(aes(x = n, y = fct_reorder(word, n))) +
+  geom_col()
+```
+
+    ## Selecting by n
+
+![](Lab06_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+The word “patient” is the most common non-filler word. Pronouns are also
+common words. However, the most common words include “the” and “and.”
+This makes sense, as filler/stop words are very common in written
+language.
+
+## 3. Removing stopwords
+
+``` r
+mtsamples %>%
+  unnest_tokens(output= word, input= transcription) %>%
+  count(word, sort= TRUE) %>%
+  anti_join(stop_words, by = "word") %>%
+  #using method from class (regular expressions) to remove numbers too
+  filter(!grepl(pattern= "^[0-9]+$", x= word)) %>%
+  top_n(20) %>%
+  ggplot(aes(x = n, y = fct_reorder(word, n))) +
+  geom_col()
+```
+
+    ## Selecting by n
+
+![](Lab06_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+Now that we have removed all the stop words and numbers, we see many
+medical terms among the top 20 most common words. These words include
+“blood,” “skin,” “anesthesia” and “artery.” The other words among this
+list make sense given the medical environment.
