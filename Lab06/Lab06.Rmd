@@ -1,0 +1,20 @@
+---
+title: "Lab 06"
+author: "Sylvia Baeyens"
+date: "8/1/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages, echo= FALSE, include= FALSE}
+#including necessary libraries
+library(tidyverse)
+library(tidytext)
+library(dplyr)
+library(ggplot2)
+library(data.table)
+```
+
