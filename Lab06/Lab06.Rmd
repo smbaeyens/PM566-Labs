@@ -2,7 +2,11 @@
 title: "Lab 06"
 author: "Sylvia Baeyens"
 date: "8/1/2021"
-output: html_document
+output:
+  github_document:
+  html_document:
+    html_preview: false
+always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
@@ -18,3 +22,39 @@ library(ggplot2)
 library(data.table)
 ```
 
+Reading in Data 
+```{r}
+rawData= "mtsamples.csv"
+if(!file.exists(rawData))
+  download.file("https://raw.githubusercontent.com/USCbiostats/data-science-data/master/00_mtsamples/mtsamples.csv", destfile = rawData)
+
+mtsamples= read.csv(rawData) 
+mtsamples= as_tibble(mtsamples)
+```
+
+## 1. What specialties do we have?
+
+First, we count the number of specialties
+```{r}
+Nspecialties = mtsamples %>%
+  count(medical_specialty)
+
+Nspecialties %>%
+  arrange(desc(n)) %>%
+  top_n(15) %>%
+  knitr::kable()
+```
+
+There are `r nrow(Nspecialties)` specialties.
+
+Next, we look at distribution:
+```{r}
+#using method 2 from class:
+
+ggplot(Nspecialties, aes(x = n, y = fct_reorder(medical_specialty, n))) +
+  geom_col()
+```
+
+There is no even distribution among the `r nrow(Nspecialties)` specialties. Surgery has the highest count, while hospice-pallative care has the lowest count.
+
+## 2. Tokenizing the words in the transcription column
