@@ -3,9 +3,9 @@ title: "Lab 07"
 author: "Sylvia Baeyens"
 date: "10/8/2021"
 output:
-  html_document: default
-  github_document: 
+  github_document:
     html_preview: false
+  html_document: default
   word_document: default
 always_allow_html: true
 ---
