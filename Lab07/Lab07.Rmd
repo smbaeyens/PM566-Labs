@@ -3,15 +3,24 @@ title: "Lab 07"
 author: "Sylvia Baeyens"
 date: "10/8/2021"
 output:
-  github_document:
-  html_document:
+  html_document: default
+  github_document: 
     html_preview: false
+  word_document: default
 always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+options(repos = c(CRAN = "http://cran.rstudio.com"))
 ```
+
+```{r}
+if (knitr::is_html_output(excludes = "gfm")) {
+  
+}
+```
+
 
 ```{r packages, echo= FALSE, include= FALSE}
 #including necessary libraries
@@ -21,3 +30,60 @@ library(dplyr)
 library(ggplot2)
 library(data.table)
 ```
+
+# 1. How many sars-cov-2 papers?
+```{r}
+#downloading website
+webData = xml2::read_html("https://pubmed.ncbi.nlm.nih.gov/?term=sars-cov-2")
+
+#Finding the counts
+counts = xml2::xml_find_first(webData, "/html/body/main/div[9]/div[2]/div[2]/div[1]/span")
+
+#Turning it into text
+counts = as.character(counts)
+
+# Extracting the data using regex
+stringr::str_extract(counts, "[0-9,]+")
+stringr::str_extract(counts, "[[:digit:],]+")
+
+```
+
+There are 115799 sars-cov-2 papers
+
+# 2. Academic publications on covid19 & hawaii
+
+```{r}
+library(httr)
+queryIDs = GET(
+  url   = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
+  query = list(
+    db     = "pubmed",
+    term   = "covid19 hawaii",
+    retmax = 1000
+    )
+)
+GET(
+  url   = "https://eutils.ncbi.nlm.nih.gov/",
+  path  = "entrez/eutils/esearch.fcgi",
+  query = list(
+    db     = "pubmed",
+    term   = "covid19 hawaii",
+    retmax = 1000
+    )
+)
+
+#extracting answer
+ids = httr::content(queryIDs)
+ids
+
+idsList = xml2::as_list(ids)
+#idsList
+# ^ commenting out the list as it's very long
+```
+
+# 3. Get details about the Articles (from q2)
+
+```{r}
+
+```
+
