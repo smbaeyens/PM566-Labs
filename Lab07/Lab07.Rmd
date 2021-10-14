@@ -1,0 +1,23 @@
+---
+title: "Lab 07"
+author: "Sylvia Baeyens"
+date: "10/8/2021"
+output:
+  github_document:
+  html_document:
+    html_preview: false
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages, echo= FALSE, include= FALSE}
+#including necessary libraries
+library(tidyverse)
+library(tidytext)
+library(dplyr)
+library(ggplot2)
+library(data.table)
+```
