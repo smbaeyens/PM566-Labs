@@ -84,6 +84,47 @@ idsList = xml2::as_list(ids)
 # 3. Get details about the Articles (from q2)
 
 ```{r}
+# Turn the result into a character vector
+ids <- as.character(ids)
+
+# Find all the ids 
+ids <- stringr::str_extract_all(ids, "<Id>[0-9]+</Id>")[[1]]
+
+# Remove all the leading and trailing <Id> </Id>. Make use of "|"
+ids <- stringr::str_remove_all(ids, "<Id>|</Id>")
+head(ids)
+
+#getting publication abstracts
+publications = GET(
+  url   = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi",
+  query = list(
+    db = "pubmed",
+    id = I(paste(ids, collapse=",")),
+    retmax = 1000,
+    rettype = "abstract"
+    )
+)
+
+# Turning the output into character vector
+publications = httr::content(publications)
+publications_txt = as.character(publications)
+```
+
+# 4. Distribution of Universities, schools & departments
+
+```{r}
+institution = str_extract_all(
+  str_to_lower(publications_txt),
+  "university\\s+of\\s+(southern|new|northern|the)?\\s*[[:alpha:]-]+|[[:alpha:]-]+\\s+institute\\s+of\\s+[[:alpha:]-]+"
+  ) 
+institution = unlist(institution)
+table(institution)
+
+schoolsDepartments = str_extract_all(
+  str_to_lower(publications_txt),
+  "school\\s+of\\s+[[:alpha:]-]+|department\\s+of\\s+[[:alpha:]-]+"
+  )
+table(schoolsDepartments)
 
 ```
 
