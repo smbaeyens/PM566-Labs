@@ -128,3 +128,26 @@ table(schoolsDepartments)
 
 ```
 
+# 5. Form a Database
+```{r}
+pub_char_list = xml2::xml_children(publications)
+pub_char_list = sapply(pub_char_list, as.character)
+
+abstracts = str_extract(pub_char_list, "<Abstract>[[:print:][:space:]]+</Abstract>")
+#clean all html tags
+abstracts = str_remove_all(abstracts, "</?[[:alnum:]- =\"]+>")
+#clean all extra spaces & new lines
+abstracts = str_replace_all(abstracts, "[[:space:]]+", " ")
+
+titles = str_extract(pub_char_list, "<ArticleTitle>[[:print:][:space:]]+</ArticleTitle>")
+#clean all html tags
+titles = str_remove_all(titles, "</?[[:alnum:]- =\"]+>")
+
+database = data.frame(
+  PubMedId = ids,
+  Title    = titles,
+  Abstract = abstracts
+)
+knitr::kable(database)
+```
+
