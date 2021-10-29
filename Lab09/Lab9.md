@@ -17,11 +17,11 @@ fun1(5,10)
 ```
 
     ##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-    ## [1,]    5    0    5    4    4    3    5    2    4     5
-    ## [2,]    3    5    2    3    1    4    2    4    4     4
-    ## [3,]    2    2    2    5    6    2    4    4    7     7
-    ## [4,]    3    4    6    5    3    6    2    2    5     8
-    ## [5,]    3    3    4    4    3    2    4    8    6     1
+    ## [1,]    2    7    9    5    3    9    3    5    5     4
+    ## [2,]    5    1    6    5   10    4    0    1    2     8
+    ## [3,]    4    2    7    4    1    3    5    7    4     3
+    ## [4,]    3    5    3    4    4    4    8    5    2     2
+    ## [5,]    2    5    2    4    8    4    4    6    4     7
 
 ``` r
 fun1alt <- function(n = 100, k = 4, lambda = 4) {
@@ -39,9 +39,9 @@ microbenchmark::microbenchmark(
     ## less accurate nanosecond times to avoid potential integer overflows
 
     ## Unit: relative
-    ##       expr      min       lq     mean   median       uq       max neval
-    ##     fun1() 11.59306 12.65574 7.477653 12.94143 13.08435 0.2241079   100
-    ##  fun1alt()  1.00000  1.00000 1.000000  1.00000  1.00000 1.0000000   100
+    ##       expr      min       lq     mean   median       uq      max neval
+    ##     fun1() 13.11218 12.45735 7.206244 12.35515 12.38762 0.258983   100
+    ##  fun1alt()  1.00000  1.00000 1.000000  1.00000  1.00000 1.000000   100
 
 ``` r
 #find the column max
@@ -73,6 +73,75 @@ microbenchmark::microbenchmark(
 ```
 
     ## Unit: relative
-    ##        expr     min       lq     mean  median       uq      max neval
-    ##     fun2(x) 7.59321 7.392162 6.643006 7.41783 7.640504 1.950108   100
-    ##  fun2alt(x) 1.00000 1.000000 1.000000 1.00000 1.000000 1.000000   100
+    ##        expr      min       lq     mean  median       uq     max neval
+    ##     fun2(x) 7.165345 7.188462 6.572052 7.42574 7.879063 1.74888   100
+    ##  fun2alt(x) 1.000000 1.000000 1.000000 1.00000 1.000000 1.00000   100
+
+## Problem 3: Parallelize Everything
+
+``` r
+library(parallel)
+my_boot <- function(dat, stat, R, ncpus = 1L) {
+  
+  # Getting the random indices
+  n <- nrow(dat)
+  idx <- matrix(sample.int(n, n*R, TRUE), nrow=n, ncol=R)
+ 
+  # Making the cluster using `ncpus`
+  # STEP 1: GOES HERE- creating a cluster
+  cl <- makePSOCKcluster(ncpus)    
+  # STEP 2: GOES HERE- preparing a cluster
+  clusterExport(cl, c("stat", "dat", "idx"),envir = environment())
+  
+    # STEP 3: THIS FUNCTION NEEDS TO BE REPLACES WITH parLapply
+  ans <- parLapply(cl=cl, seq_len(R), function(i) {
+    stat(dat[idx[,i], , drop=FALSE])
+  })
+
+  # Coercing the list into a matrix
+  ans <- do.call(rbind, ans)
+  
+  # STEP 4: GOES HERE
+  stopCluster(cl)
+  ans
+  
+}
+```
+
+``` r
+# Bootstrap of an OLS
+my_stat <- function(d) coef(lm(y ~ x, data=d))
+
+# DATA SIM
+set.seed(1)
+n <- 500; R <- 1e3
+
+x <- cbind(rnorm(n)); y <- x*5 + rnorm(n)
+
+# Checking if we get something similar as lm
+ans0 <- confint(lm(y~x))
+ans1 <- my_boot(dat = data.frame(x, y), my_stat, R = R, ncpus = 2L)
+
+# You should get something like this
+t(apply(ans1, 2, quantile, c(.025,.975)))
+```
+
+    ##                   2.5%      97.5%
+    ## (Intercept) -0.1430703 0.05292241
+    ## x            4.8685251 5.04843669
+
+Is it faster?
+
+``` r
+system.time(my_boot(dat = data.frame(x, y), my_stat, R = 4000, ncpus = 1L))
+```
+
+    ##    user  system elapsed 
+    ##   0.035   0.006   1.305
+
+``` r
+system.time(my_boot(dat = data.frame(x, y), my_stat, R = 4000, ncpus = 2L))
+```
+
+    ##    user  system elapsed 
+    ##   0.049   0.009   0.771
