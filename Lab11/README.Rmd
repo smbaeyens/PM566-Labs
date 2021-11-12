@@ -1,11 +1,10 @@
 ---
-title: "Lab 10: Interactive Visualization"
-author: "Sylvia Baeyens"
+title: "Lab 11 - Interactive Visualization"
 date: "11/12/2021"
-output:
-  github_document: 
-    html_preview: false
-  html_document: default
+output: html_document
+link-citations: yes
+editor_options: 
+  chunk_output_type: console
 always_allow_html: true
 ---
 
@@ -21,6 +20,8 @@ library(dplyr)
 library(data.table)
 library(tidyverse)
 library(knitr)
+
+
 ```
 
 # Reading and processing the New York Times (NYT) state-level COVID-19 data
