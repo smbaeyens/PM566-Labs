@@ -283,7 +283,7 @@ plot_ly(x=colnames(cv_states_mat2), y=rownames(cv_states_mat2),
 ```{r}
 ### For specified date
 
-pick.date = "2021-10-15"
+pick.date = "2021-10-10"
 
 # Extract the data for each state by its abbreviation
 cv_per100 <- cv_states %>% filter(date==pick.date) %>% select(state, abb, newper100k, cases, deaths) # select data
@@ -353,6 +353,6 @@ fig_Today <- fig
 
 
 ### Plot together 
-# ________(fig_pick.date, fig_Today, nrows = 2, margin = .05)
+subplot(fig_pick.date, fig_Today, nrows = 2, margin = .05)
 ```
 
