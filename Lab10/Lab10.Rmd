@@ -123,4 +123,76 @@ GROUP BY customer_id
 
 ```
 
+# 6.3
+
+```{sql connection=con}
+
+SELECT customer_id,
+  COUNT (*) as Number_Rentals
+FROM rental
+GROUP BY customer_id
+ORDER BY Number_Rentals DESC
+
+```
+
+# 6.4
+
+```{sql connection=con}
+
+SELECT customer_id,
+  COUNT (*) as Number_Rentals
+FROM rental
+GROUP BY customer_id
+HAVING Number_Rentals >= 40
+ORDER BY Number_Rentals DESC
+
+```
+
+# 7.
+
+```{sql connection=con}
+
+SELECT MAX(amount) as max_amount,
+  MIN(amount) as min_amount,
+  AVG(amount) as avg_amount,
+  SUM(amount) as sum_amount
+  FROM payment
+
+```
+# 7.1
+
+```{sql connection=con} 
+
+SELECT customer_id,
+  MAX(amount) as max_amount,
+  MIN(amount) as min_amount,
+  AVG(amount) as avg_amount,
+  SUM(amount) as sum_amount
+  FROM payment
+  GROUP BY customer_id
+
+```
+
+# 7.2
+
+```{sql connection=con}
+
+SELECT customer_id,
+  MAX(amount) as max_amount,
+  MIN(amount) as min_amount,
+  AVG(amount) as avg_amount,
+  SUM(amount) as sum_amount
+  FROM payment
+  GROUP BY customer_id
+  HAVING COUNT(payment_id) > 5
+
+```
+
+# Clean up
+```{r}
+
+# clean up
+dbDisconnect(con)
+
+```
 

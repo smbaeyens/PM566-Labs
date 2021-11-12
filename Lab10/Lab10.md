@@ -248,3 +248,149 @@ GROUP BY customer_id
 Displaying records 1 - 10
 
 </div>
+
+# 6.3
+
+``` sql
+SELECT customer_id,
+  COUNT (*) as Number_Rentals
+FROM rental
+GROUP BY customer_id
+ORDER BY Number_Rentals DESC
+```
+
+<div class="knitsql-table">
+
+| customer\_id | Number\_Rentals |
+|-------------:|----------------:|
+|          148 |              46 |
+|          526 |              45 |
+|          236 |              42 |
+|          144 |              42 |
+|           75 |              41 |
+|          469 |              40 |
+|          197 |              40 |
+|          468 |              39 |
+|          178 |              39 |
+|          137 |              39 |
+
+Displaying records 1 - 10
+
+</div>
+
+# 6.4
+
+``` sql
+SELECT customer_id,
+  COUNT (*) as Number_Rentals
+FROM rental
+GROUP BY customer_id
+HAVING Number_Rentals >= 40
+ORDER BY Number_Rentals DESC
+```
+
+<div class="knitsql-table">
+
+| customer\_id | Number\_Rentals |
+|-------------:|----------------:|
+|          148 |              46 |
+|          526 |              45 |
+|          236 |              42 |
+|          144 |              42 |
+|           75 |              41 |
+|          469 |              40 |
+|          197 |              40 |
+
+7 records
+
+</div>
+
+# 7.
+
+``` sql
+SELECT MAX(amount) as max_amount,
+  MIN(amount) as min_amount,
+  AVG(amount) as avg_amount,
+  SUM(amount) as sum_amount
+  FROM payment
+```
+
+<div class="knitsql-table">
+
+| max\_amount | min\_amount | avg\_amount | sum\_amount |
+|------------:|------------:|------------:|------------:|
+|       11.99 |        0.99 |    4.169775 |     4824.43 |
+
+1 records
+
+</div>
+
+# 7.1
+
+``` sql
+SELECT customer_id,
+  MAX(amount) as max_amount,
+  MIN(amount) as min_amount,
+  AVG(amount) as avg_amount,
+  SUM(amount) as sum_amount
+  FROM payment
+  GROUP BY customer_id
+```
+
+<div class="knitsql-table">
+
+| customer\_id | max\_amount | min\_amount | avg\_amount | sum\_amount |
+|-------------:|------------:|------------:|------------:|------------:|
+|            1 |        2.99 |        0.99 |    1.990000 |        3.98 |
+|            2 |        4.99 |        4.99 |    4.990000 |        4.99 |
+|            3 |        2.99 |        1.99 |    2.490000 |        4.98 |
+|            5 |        6.99 |        0.99 |    3.323333 |        9.97 |
+|            6 |        4.99 |        0.99 |    2.990000 |        8.97 |
+|            7 |        5.99 |        0.99 |    4.190000 |       20.95 |
+|            8 |        6.99 |        6.99 |    6.990000 |        6.99 |
+|            9 |        4.99 |        0.99 |    3.656667 |       10.97 |
+|           10 |        4.99 |        4.99 |    4.990000 |        4.99 |
+|           11 |        6.99 |        6.99 |    6.990000 |        6.99 |
+
+Displaying records 1 - 10
+
+</div>
+
+# 7.2
+
+``` sql
+SELECT customer_id,
+  MAX(amount) as max_amount,
+  MIN(amount) as min_amount,
+  AVG(amount) as avg_amount,
+  SUM(amount) as sum_amount
+  FROM payment
+  GROUP BY customer_id
+  HAVING COUNT(payment_id) > 5
+```
+
+<div class="knitsql-table">
+
+| customer\_id | max\_amount | min\_amount | avg\_amount | sum\_amount |
+|-------------:|------------:|------------:|------------:|------------:|
+|           19 |        9.99 |        0.99 |    4.490000 |       26.94 |
+|           53 |        9.99 |        0.99 |    4.490000 |       26.94 |
+|          109 |        7.99 |        0.99 |    3.990000 |       27.93 |
+|          161 |        5.99 |        0.99 |    2.990000 |       17.94 |
+|          197 |        3.99 |        0.99 |    2.615000 |       20.92 |
+|          207 |        6.99 |        0.99 |    2.990000 |       17.94 |
+|          239 |        7.99 |        2.99 |    5.656667 |       33.94 |
+|          245 |        8.99 |        0.99 |    4.823333 |       28.94 |
+|          251 |        4.99 |        1.99 |    3.323333 |       19.94 |
+|          269 |        6.99 |        0.99 |    3.156667 |       18.94 |
+
+Displaying records 1 - 10
+
+</div>
+
+# Clean up
+
+``` r
+# clean up
+dbDisconnect(con)
+```
