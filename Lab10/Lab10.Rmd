@@ -1,0 +1,126 @@
+---
+title: "Lab9HPC"
+author: "Sylvia Baeyens"
+date: "10/29/2021"
+output:
+  github_document: 
+    html_preview: false
+  html_document: default
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(repos = c(CRAN = "http://cran.rstudio.com"))
+```
+
+```{r packages, echo= FALSE, include= FALSE}
+install.packages(c("RSQLite", "DBI"))
+library(RSQLite)
+library(DBI)
+```
+
+# Setup
+```{r}
+con <- dbConnect(SQLite(), ":memory:")
+
+actor = read.csv("https://raw.githubusercontent.com/ivanceras/sakila/master/csv-sakila-db/actor.csv")
+rental = read.csv("https://raw.githubusercontent.com/ivanceras/sakila/master/csv-sakila-db/rental.csv")
+customer = read.csv("https://raw.githubusercontent.com/ivanceras/sakila/master/csv-sakila-db/customer.csv")
+payment = read.csv("https://raw.githubusercontent.com/ivanceras/sakila/master/csv-sakila-db/payment_p2007_01.csv")
+
+dbWriteTable(con, "actor", actor)
+dbWriteTable(con, "rental", rental)
+dbWriteTable(con, "customer", customer)
+dbWriteTable(con, "payment", payment)
+
+dbListTables(con)
+
+```
+
+# 1. 
+```{sql connection=con}
+SELECT actor_id, first_name, last_name
+FROM actor
+ORDER by last_name, first_name
+```
+
+
+# 2.
+```{sql connection=con}
+SELECT actor_id, first_name, last_name
+FROM actor
+WHERE last_name IN ('WILLIAMS', 'DAVIS')
+
+```
+
+# 3. 
+```{sql connection=con}
+
+SELECT DISTINCT rental_id
+FROM rental
+WHERE date(rental_date) = '2005-07-05'
+```
+
+# 4.1 
+```{sql connection=con}
+
+SELECT *
+FROM payment
+WHERE amount IN (1.99, 7.99, 9.99)
+
+```
+
+# 4.2 
+```{sql connection= con}
+
+SELECT *
+FROM payment
+WHERE amount > 5
+
+```
+
+# 4.3 
+
+```{sql connection= con}
+
+SELECT *
+FROM payment
+WHERE amount > 5 AND amount < 8
+
+```
+
+# 5.
+
+```{sql connection=con}
+
+SELECT payment_id, amount
+FROM payment AS a
+  INNER JOIN customer AS b
+  ON a.customer_id = b.customer_id
+WHERE b.last_name = "DAVIS"
+
+```
+
+# 6.1
+
+```{sql connection=con}
+
+SELECT 
+  COUNT (*) as Number_Rows
+FROM rental
+
+```
+
+# 6.2
+
+```{sql connection=con}
+
+SELECT customer_id,
+  COUNT (*) as Number_Rentals
+FROM rental
+GROUP BY customer_id
+
+```
+
+
